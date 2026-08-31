@@ -3,7 +3,7 @@
 This Compose project starts RabbitMQ, InfluxDB, Grafana, and an x86_64 Ubuntu
 24.04 Karabo environment.
 
-If you use `docker` instead of `podmanc`, simply replace `podman` with `docker`
+If you use `docker` instead of `podman`, simply replace `podman` with `docker`
 in all commands listed below.
 
 Start everything with:
