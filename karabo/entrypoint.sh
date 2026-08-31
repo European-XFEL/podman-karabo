@@ -9,7 +9,7 @@ if [ ! -f "$installation/activate" ]; then
         --influx-db tcp://influxdb:8086
 
     data_logger_run="$installation/var/service/karabo_dataLoggerManager/run"
-    chmod u+w "$data_logger_run"
+    chmod +w "$data_logger_run"
     sed -i 's/"logger": "InfluxDataLogger", //g' "$data_logger_run"
 fi
 

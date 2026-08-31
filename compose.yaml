@@ -19,6 +19,11 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq/
       - rabbitmq-logs:/var/log/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
     restart: unless-stopped
 
@@ -33,7 +38,7 @@ services:
       INFLUXDB_ADMIN_ENABLED: 1
       INFLUXDB_ADMIN_USER: admin
       INFLUXDB_ADMIN_PASSWORD: admin
-      INFLUXDB_HTTP_AUTH_ENABLED: true
+      INFLUXDB_HTTP_AUTH_ENABLED: false
     healthcheck:
       test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8086'"]
       interval: 5s
@@ -66,7 +71,7 @@ services:
       - "44444:44444"
     depends_on:
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
       influxdb:
         condition: service_healthy
     volumes:
