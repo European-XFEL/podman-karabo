@@ -11,6 +11,16 @@ if [ ! -f "$installation/activate" ]; then
     data_logger_run="$installation/var/service/karabo_dataLoggerManager/run"
     chmod +w "$data_logger_run"
     sed -i 's/"logger": "InfluxDataLogger", //g' "$data_logger_run"
+
+    # InfluxLogReader in Karabo 3.1 reads these newer variable names, whereas
+    # karabo-activate currently creates the older KARABO_INFLUX_* names above.
+    printf '%s' 'tcp://influxdb:8086' > "$installation/var/environment/KARABO_INFLUXDB_QUERY_URL"
+    printf '%s' 'karabo' > "$installation/var/environment/KARABO_INFLUXDB_DBNAME"
+
+    # The packaged GUI service defaults to the obsolete KaraboDataLoggerManager
+    # device ID. Point it at the manager created by this standalone installation.
+    sed -i 's/"port": 44444}}/"port": 44444, "dataLogManagerId": "Karabo_DataLoggerManager_0"}}/' \
+        "$installation/var/service/karabo_guiServer/run"
 fi
 
 # The activation script prepares the environment for the command below.

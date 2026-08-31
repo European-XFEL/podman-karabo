@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends git python3-venv \
+    && apt-get install --yes --no-install-recommends curl git procps python3-venv \
     && python3 -m venv /opt/karabo-venv \
     && /opt/karabo-venv/bin/pip install 'karabo[full]' \
     && apt-get clean \

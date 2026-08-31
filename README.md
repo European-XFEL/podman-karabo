@@ -28,6 +28,25 @@ available at `rabbitmq:5672` inside the container, using the `xfel` / `karabo`
 credentials; InfluxDB is at `influxdb:8086`.
 The Karabo GUI server is published on host port `44444`.
 
+## Host GUI
+
+Install the Karabo GUI on the host separately from the container, for example
+in a virtual environment:
+
+```sh
+python3 -m venv .venv-karabo-gui
+source .venv-karabo-gui/bin/activate
+pip install karabo.gui
+```
+
+Or create and activate a Conda environment, then run `pip install karabo.gui`:
+
+```sh
+conda create -n karabo-gui python=3.12
+conda activate karabo-gui
+pip install karabo.gui
+```
+
 ## Developing in the container
 
 Keep the services running, then open an interactive, activated shell in the
@@ -53,6 +72,18 @@ To use Podman with the Dev Containers extension, open VS Code **Settings**
 (`Cmd+,` on macOS), search for **Dev Containers: Docker Path**, and set it to
 `podman`. Reload VS Code, then attach to the same running `karabo` container.
 
+If VS Code connects but its terminal never opens, run **Dev Containers: Open
+Named Configuration File** from the Command Palette, select `karabo`, and add:
+
+```json
+{
+  "userEnvProbe": "none"
+}
+```
+
+Reattach to the container. This bypasses VS Code's login-shell environment
+probe; terminals still source `/opt/karabo/framework/activate` via `.bashrc`.
+
 ## Podman on Apple Silicon
 
 Podman on macOS uses a Linux virtual machine. On Apple Silicon, create an
@@ -75,6 +106,24 @@ If you already have a Podman machine that was not created with the Apple
 Hypervisor provider, create a new `applehv` machine (or recreate the existing
 one) before running the project. The `linux/amd64` platform in `compose.yaml`
 selects the x86_64 image; emulation is slower than running a native image.
+
+### Memory for Karabo and VS Code
+
+Karabo's services and the x86_64-emulated VS Code Server need more memory than
+Podman's common 2 GiB default. Allocate at least 4, better 8 GiB
+to the Podman machine:
+
+```sh
+podman machine stop
+podman machine set --memory 8192
+podman machine start
+podman compose up -d
+```
+
+Stopping the machine temporarily stops its containers but does not remove their
+images or volumes. If VS Code reports a successful container connection and its
+terminal then hangs or disconnects, look for `Killed` or `ECONNRESET` in the
+Dev Containers log; these indicate that the VM ran out of memory.
 
 ### Resetting a locked Karabo service volume
 
