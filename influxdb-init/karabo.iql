@@ -1,0 +1,3 @@
+CREATE DATABASE karabo
+CREATE USER infadm WITH PASSWORD 'admpwd'
+GRANT ALL ON karabo TO infadm
