@@ -125,18 +125,18 @@ images or volumes. If VS Code reports a successful container connection and its
 terminal then hangs or disconnects, look for `Killed` or `ECONNRESET` in the
 Dev Containers log; these indicate that the VM ran out of memory.
 
-### Resetting a locked Karabo service volume
+### Repairing a locked Karabo service volume
 
 If Karabo exits with `svok: fatal: unable to chdir .../.svscan: access denied`
-or a `PermissionError` for `var/service`, its persisted daemontools supervisor
-state belongs to a previous Podman container context. Remove only the Karabo
-container and installation volume, then initialize it again:
+or a `PermissionError` for `var/service`, Podman has retained an SELinux label
+from a previous Karabo container. The Karabo service disables SELinux labeling
+for its named installation volume, so the existing installation can be
+retained. Recreate only the Karabo container:
 
 ```sh
-podman rm -f karabo_workshop-karabo-1
-podman volume rm karabo_workshop_karabo-installation
-podman compose up --build -d karabo
+podman compose rm -sf karabo
+podman compose up -d karabo
 ```
 
-This deletes the Karabo installation and service state, but preserves the
-RabbitMQ, InfluxDB, and Grafana volumes.
+Do not remove `karabo-installation`; it contains the activated Karabo
+environment. The recreated container can access it without relabeling.

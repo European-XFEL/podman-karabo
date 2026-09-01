@@ -75,7 +75,9 @@ services:
       influxdb:
         condition: service_healthy
     volumes:
-      - karabo-installation:/opt/karabo:Z
+      - karabo-installation:/opt/karabo
+    security_opt:
+      - label=disable
     restart: unless-stopped
 
 volumes:
