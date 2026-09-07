@@ -1,15 +1,19 @@
-# Karabo workshop services
+# Karabo Workshop Services
 
 This Compose project starts RabbitMQ, InfluxDB, Grafana, and an x86_64 Ubuntu
 24.04 Karabo environment.
-
-If you use `docker` instead of `podman`, simply replace `podman` with `docker`
-in all commands listed below.
 
 Start everything with:
 
 ```sh
 podman compose up --build
+```
+
+If you use `docker` instead of `podman`, run instead:
+
+```sh
+docker-compose build
+docker-compose up
 ```
 
 The `karabo` service is intentionally pinned to `linux/amd64`, including on
@@ -47,7 +51,7 @@ conda activate karabo-gui
 pip install karabo.gui
 ```
 
-## Developing in the container
+## Developing in the Container
 
 Keep the services running, then open an interactive, activated shell in the
 Karabo container:
@@ -55,6 +59,8 @@ Karabo container:
 ```sh
 podman compose exec karabo bash
 ```
+
+(or replace `podman compose` with `docker-compose`).
 
 The shell sources `/opt/karabo/framework/activate` automatically. Your work is
 inside the container unless you explicitly mount a host directory in
@@ -125,7 +131,7 @@ images or volumes. If VS Code reports a successful container connection and its
 terminal then hangs or disconnects, look for `Killed` or `ECONNRESET` in the
 Dev Containers log; these indicate that the VM ran out of memory.
 
-### Repairing a locked Karabo service volume
+### Resetting a Locked Karabo Service Volume
 
 If Karabo exits with `svok: fatal: unable to chdir .../.svscan: access denied`
 or a `PermissionError` for `var/service`, Podman has retained an SELinux label
