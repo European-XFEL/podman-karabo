@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-installation=/opt/karabo/framework
+installation=/home/karabouser/framework
 
 if [ ! -f "$installation/activate" ]; then
     karabo-activate --init-to "$installation" --backbone \
