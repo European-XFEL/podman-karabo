@@ -1,7 +1,18 @@
-# Karabo Workshop Services
+# Podman Karabo
 
-This Compose project starts RabbitMQ, InfluxDB, Grafana, and an x86_64 Ubuntu
-24.04 Karabo environment.
+This repository bundles containers to run a Karabo environment on an x86_64
+Ubuntu 24.04 with its necessary prerequisites (RabbitMQ, InfluxDB, Grafana)
+on various operating systems.
+It should work on any Linux system, on macOS (even Apple Silicon), and on
+Windows 11.
+The system needs `podman` (`docker` may work on Linux) to be installed to run
+Linux containers.
+
+Windows and macOS specific guides for `podman` can be found further below.
+
+# Karabo Workshop Environment Setup
+
+Checkout this repository and, within its repository, follow these steps:
 
 Start everything with:
 
@@ -51,10 +62,18 @@ conda activate karabo-gui
 pip install karabo.gui
 ```
 
+Or download and install a complete Karabo GUI bundle that matches your
+operating system from
+
+https://syncandshare.xfel.eu/index.php/s/tcdSdqLGKbqYoWb
+
+(recommended for Windows).
+
 ## Developing in the Container
 
-Keep the services running, then open an interactive, activated shell in the
-Karabo container:
+Keep the services running, then, in another shell of your host machine,
+open an interactive shell in the Karabo container
+(after `cd` to the directory with `podman.yaml`) via: 
 
 ```sh
 podman compose exec karabo bash
@@ -65,6 +84,19 @@ podman compose exec karabo bash
 The shell sources `/opt/karabo/framework/activate` automatically. Your work is
 inside the container unless you explicitly mount a host directory in
 `compose.yaml`.
+
+Note that terminal editors like `emacs`, `nano` and `vim` are available in
+the machine.
+
+The Karabo environment is activated in this `bash` shell.
+You can check that and see which Karabo servers are available via
+
+```sh
+karabo-check
+```
+
+Note that you can run many of these shells in parallel.
+
 
 ### VS Code Remote Development
 
@@ -89,6 +121,61 @@ Named Configuration File** from the Command Palette, select `karabo`, and add:
 
 Reattach to the container. This bypasses VS Code's login-shell environment
 probe; terminals still source `/opt/karabo/framework/activate` via `.bashrc`.
+
+## Podman on Windows 11
+
+Extensive instruction can be found at
+
+https://github.com/podman-container-tools/podman/blob/main/docs/tutorials/podman-for-windows.md
+
+In short:
+
+Install the `Windows Terminal` via the Windows store or by running
+
+```sh
+winget install Microsoft.WindowsTerminal
+```
+
+in the Windos CMD or PowerShell prompt.
+We recommend to run the commands in the PowerShell.
+
+Download podman installer v6.1.1  from
+
+https://github.com/podman-container-tools/podman/releases
+
+e.g. `podman-installer-windows-amd64.msi`
+
+(or `...arm64.ms`), matching your machine architecture, and execute it,
+e.g. by double-click.
+
+When prompted, choose WSLv2.
+
+It is also recommended to install the `Podman Desktop` from
+
+https://podman-desktop.io/docs/installation/windows-install
+
+It gives you nice overview and configuration options in case of
+troubleshooting.
+
+Download `podman-karabo-run-main.zip` from
+https://git.xfel.eu/Karabo/podman-karabo
+(via Code -> Download source code -> Zip) and unpack to where it suits
+(right-click `Extract-All`).
+
+In a new PowerShell, `cd` into that directory (where the `compose.yaml`
+file is located) and execute
+
+```sh
+podman machine init
+podman machine start
+podman compose up --build
+```
+(If the latter command fails with timeout in some download step, simply retry.)
+
+Keep that shell up and running. With `Ctrl-C` you could stop it, but that
+exits also the shells you opened (see below).
+
+Continue now with the generic section about `Developing in the Container`.
 
 ## Podman on Apple Silicon
 
