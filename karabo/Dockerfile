@@ -18,6 +18,7 @@ WORKDIR /home/karabouser
 COPY entrypoint.sh /usr/local/bin/karabo-entrypoint
 RUN chmod +x /usr/local/bin/karabo-entrypoint
 
+COPY workshop_project.sqlite3 /usr/local/share/
 
 # Run the container as the unprivileged user (numeric UID: survives /etc/passwd changes)
 USER 1001:1001
