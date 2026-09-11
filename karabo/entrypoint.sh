@@ -3,7 +3,8 @@ set -euo pipefail
 
 installation=/home/karabouser/framework
 
-if [ ! -f "$installation/activate" ]; then
+
+if [ ! -f "first_run" ]; then
     karabo-activate --init-to "$installation" --backbone \
         --broker-host amqp://xfel:karabo@rabbitmq:5672 --broker-topic karabo \
         --influx-db tcp://influxdb:8086
@@ -25,5 +26,9 @@ fi
 
 # The activation script prepares the environment for the command below.
 source "$installation/activate"
+
+# Create empty file as indicator that this script already ran once
+touch first_run
+
 karabo-start
 exec "$@"
