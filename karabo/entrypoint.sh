@@ -9,6 +9,10 @@ if [ ! -f "first_run" ]; then
         --broker-host amqp://xfel:karabo@rabbitmq:5672 --broker-topic karabo \
         --influx-db tcp://influxdb:8086
 
+    mkdir -p $installation/var/data/project_db/
+    cp /usr/local/share/workshop_project.sqlite3 $installation/var/data/project_db/
+    echo workshop_project.sqlite3 > $installation/var/environment/KARABO_PROJECT_DB_DBNAME
+
     data_logger_run="$installation/var/service/karabo_dataLoggerManager/run"
     chmod +w "$data_logger_run"
     sed -i 's/"logger": "InfluxDataLogger", //g' "$data_logger_run"
@@ -24,8 +28,34 @@ if [ ! -f "first_run" ]; then
         "$installation/var/service/karabo_guiServer/run"
 fi
 
-# The activation script prepares the environment for the command below.
+# The activation script prepares the environment for the commands below.
 source "$installation/activate"
+
+if [ ! -f "first_run" ]; then
+    karabo-add-deviceserver mdlServer/workshop_gui middlelayerserver
+    karabo-add-deviceserver mdlServer/workshop_pipe middlelayerserver
+    karabo-add-deviceserver boundServer/workshop_sim pythonserver
+    karabo-add-deviceserver cppServer/workshop_sim cppserver
+    karabo-add-deviceserver mdlServer/workshop_sim middlelayerserver
+    karabo-add-deviceserver mdlServer/workshop_device middlelayerserver
+fi
+
+mkdir -p $installation/devices
+pushd $installation/devices
+
+for dev in imageSourcePy processingUtils Karabo-simulatedMotors simulatedCameraPy \
+    karaboWorkshop karaboWorkshopPipelines ; do
+  if [ ! -d "$installation/devices/$dev" ]; then
+    git clone https://github.com/European-XFEL/$dev.git
+    pushd $dev
+    if [ -f "pyproject.toml" ]; then  # for karaboWorkshop* devices we might be cloning empty repositories
+      pip install -e .
+    fi
+    popd
+  fi
+done
+
+popd  # get out from $installation/devices
 
 # Create empty file as indicator that this script already ran once
 touch first_run
