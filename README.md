@@ -32,12 +32,12 @@ Apple Silicon. Its first start persists a Karabo installation in the
 `karabo-installation` volume and runs:
 
 ```sh
-karabo-activate --init-to /opt/karabo/framework --backbone \\
+karabo-activate --init-to /home/karabouser/framework --backbone \\
   --broker-host amqp://xfel:karabo@rabbitmq:5672 --broker-topic karabo \\
   --influx-db tcp://influxdb:8086
 ```
 
-On each start, its entrypoint sources `/opt/karabo/framework/activate`, runs
+On each start, its entrypoint sources `/home/karabouser/framework/activate`, runs
 `karabo-start`, and then starts its configured command. The broker is therefore
 available at `rabbitmq:5672` inside the container, using the `xfel` / `karabo`
 credentials; InfluxDB is at `influxdb:8086`.
@@ -81,7 +81,7 @@ podman compose exec karabo bash
 
 (or replace `podman compose` with `docker-compose`).
 
-The shell sources `/opt/karabo/framework/activate` automatically. Your work is
+The shell sources `/home/karabouser/framework/activate` automatically. Your work is
 inside the container unless you explicitly mount a host directory in
 `compose.yaml`.
 
@@ -102,7 +102,7 @@ Note that you can run many of these shells in parallel.
 
 Install VS Code's **Dev Containers** extension, start the Compose project, and
 then run **Dev Containers: Attach to Running Container...** from the Command
-Palette. Select the `karabo` container and open `/opt/karabo/framework` as the
+Palette. Select the `karabo` container and open `/home/karabouser/framework` as the
 workspace. VS Code installs its server in the container and its integrated
 terminal uses the activated shell described above.
 
@@ -120,7 +120,7 @@ Named Configuration File** from the Command Palette, select `karabo`, and add:
 ```
 
 Reattach to the container. This bypasses VS Code's login-shell environment
-probe; terminals still source `/opt/karabo/framework/activate` via `.bashrc`.
+probe; terminals still source `/home/karabouser/framework/activate` via `.bashrc`.
 
 ## Podman on Windows 11
 
