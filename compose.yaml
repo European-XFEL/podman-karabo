@@ -75,7 +75,7 @@ services:
       influxdb:
         condition: service_healthy
     volumes:
-      - karabo-installation:/opt/karabo
+      - karabo-user-home:/home/karabouser
     security_opt:
       - label=disable
     restart: unless-stopped
@@ -85,4 +85,4 @@ volumes:
   rabbitmq-data:
   rabbitmq-logs:
   grafana-storage:
-  karabo-installation:
+  karabo-user-home:
