@@ -15,8 +15,8 @@ RUN groupadd -g 1001 karabogroup && \
 
 WORKDIR /home/karabouser
 
-COPY entrypoint.sh /home/karabouser/bin/karabo-entrypoint
-RUN chmod +x /home/karabouser/bin/karabo-entrypoint
+COPY entrypoint.sh /usr/local/bin/karabo-entrypoint
+RUN chmod +x /usr/local/bin/karabo-entrypoint
 
 
 # Run the container as the unprivileged user (numeric UID: survives /etc/passwd changes)
@@ -31,5 +31,5 @@ RUN printf '%s\n' '[ -f /home/karabouser/framework/activate ] && source /home/ka
 RUN python3 -m venv /home/karabouser/karabo-venv \
     && /home/karabouser/karabo-venv/bin/pip install 'karabo[full]'
 
-ENTRYPOINT ["/home/karabouser/bin/karabo-entrypoint"]
+ENTRYPOINT ["/usr/local/bin/karabo-entrypoint"]
 CMD ["sleep", "infinity"]
