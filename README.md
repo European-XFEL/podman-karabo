@@ -8,14 +8,14 @@ Windows 11.
 
 The system needs `podman` to be installed to run Linux containers.
 If `podman` does not work for you on Linux, you can alteratively use `docker`. Note
-that you might need root persissions or your username to be added to the `docker` group
+that you might need root permissions or your username to be added to the `docker` group
 in order to start `docker` containers.
 
 Windows and macOS specific guides for `podman` can be found further below.
 
 # Karabo Workshop Environment Setup
 
-Checkout this repository and, within its main directory, follow these steps:
+Checkout this repository and, within its root directory, follow these steps:
 
 Start everything with:
 
