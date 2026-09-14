@@ -5,14 +5,17 @@ Ubuntu 24.04 with its necessary prerequisites (RabbitMQ, InfluxDB, Grafana)
 on various operating systems.
 It should work on any Linux system, on macOS (even Apple Silicon), and on
 Windows 11.
-The system needs `podman` (`docker` may work on Linux) to be installed to run
-Linux containers.
+
+The system needs `podman` to be installed to run Linux containers.
+If `podman` does not work for you on Linux, you can alteratively use `docker`. Note
+that you might need root persissions or your username to be added to the `docker` group
+in order to start `docker` containers.
 
 Windows and macOS specific guides for `podman` can be found further below.
 
 # Karabo Workshop Environment Setup
 
-Checkout this repository and, within its repository, follow these steps:
+Checkout this repository and, within its main directory, follow these steps:
 
 Start everything with:
 
@@ -45,8 +48,21 @@ The Karabo GUI server is published on host port `44444`.
 
 ## Host GUI
 
-Install the Karabo GUI on the host separately from the container, for example
-in a virtual environment:
+The Karabo GUI needs to be installed on the host separately from the container. For
+this workshop (and for Windows in general), we recommend downloading and installing
+a complete Karabo GUI bundle that matches your operating system from
+
+https://syncandshare.xfel.eu/index.php/s/tcdSdqLGKbqYoWb
+
+In Linux (and possibly MacOS), you'll have to give the file writing permissions:
+
+```sh
+chmod a+x karabo-gui
+```
+
+### Other ways to install the GUI
+
+As an alternative way of installing the Karabo GUI, you can install it on a Python virtual environment (Python 3.12 required):
 
 ```sh
 python3 -m venv .venv-karabo-gui
@@ -61,13 +77,6 @@ conda create -n karabo-gui python=3.12
 conda activate karabo-gui
 pip install karabo.gui
 ```
-
-Or download and install a complete Karabo GUI bundle that matches your
-operating system from
-
-https://syncandshare.xfel.eu/index.php/s/tcdSdqLGKbqYoWb
-
-(recommended for Windows).
 
 ## Developing in the Container
 
