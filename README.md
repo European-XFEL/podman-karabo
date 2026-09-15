@@ -188,12 +188,22 @@ Continue now with the generic section about `Developing in the Container`.
 
 ## Podman on Apple Silicon
 
-Podman on macOS uses a Linux virtual machine. On Apple Silicon, create an
-Apple Hypervisor-backed machine with Rosetta support (enabled by default) so it
-can emulate x86_64 Linux binaries:
+Install Podman and its compose provider using Homebrew:
 
 ```sh
-podman machine init --provider applehv --now
+brew install podman
+brew install podman-compose
+```
+
+Podman on macOS uses a Linux virtual machine. On Apple Silicon, create an
+Apple Hypervisor-backed machine with Rosetta support (enabled by default) so it
+can emulate x86_64 Linux binaries. Allocate memory during creation for Karabo
+and the x86_64-emulated VS Code Server: use at least 4 GiB, preferably 8 GiB.
+The command below allocates 8 GiB (8192 MiB) before starting the machine.
+Use 4096 (4 GiB) if your Mac has limited RAM.:
+
+```sh
+podman machine init --provider applehv --memory 8192 --now
 podman run --rm --platform linux/amd64 alpine uname -m
 ```
 
@@ -208,24 +218,6 @@ If you already have a Podman machine that was not created with the Apple
 Hypervisor provider, create a new `applehv` machine (or recreate the existing
 one) before running the project. The `linux/amd64` platform in `compose.yaml`
 selects the x86_64 image; emulation is slower than running a native image.
-
-### Memory for Karabo and VS Code
-
-Karabo's services and the x86_64-emulated VS Code Server need more memory than
-Podman's common 2 GiB default. Allocate at least 4, better 8 GiB
-to the Podman machine:
-
-```sh
-podman machine stop
-podman machine set --memory 8192
-podman machine start
-podman compose up -d
-```
-
-Stopping the machine temporarily stops its containers but does not remove their
-images or volumes. If VS Code reports a successful container connection and its
-terminal then hangs or disconnects, look for `Killed` or `ECONNRESET` in the
-Dev Containers log; these indicate that the VM ran out of memory.
 
 ### Resetting a Locked Karabo Service Volume
 
