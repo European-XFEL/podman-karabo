@@ -13,22 +13,107 @@ in order to start `docker` containers.
 
 Windows and macOS specific guides for `podman` can be found further below.
 
-# Karabo Workshop Environment Setup
+## 1a. Podman on Windows 11
 
-Checkout this repository and, within its root directory, follow these steps:
+Extensive instruction can be found at
 
-Start everything with:
+https://github.com/podman-container-tools/podman/blob/main/docs/tutorials/podman-for-windows.md
 
-```sh
-podman compose up --build
-```
+In short:
 
-If you use `docker` instead of `podman`, run instead:
+1. Install the `Windows Terminal` via the Windows store or by running
 
-```sh
-docker-compose build
-docker-compose up
-```
+   ```sh
+   winget install Microsoft.WindowsTerminal
+   ```
+
+   in the Windos CMD or PowerShell prompt.
+   We recommend to run the commands in the PowerShell.
+
+2. Download podman installer v6.1.1  from
+
+   https://github.com/podman-container-tools/podman/releases
+
+   e.g. `podman-installer-windows-amd64.msi`
+
+   (or `...arm64.ms`), matching your machine architecture, and execute it,
+   e.g. by double-click.
+
+   When prompted, choose WSLv2.
+
+3. It is also recommended to install the `Podman Desktop` from
+
+   https://podman-desktop.io/docs/installation/windows-install
+
+   It gives you nice overview and configuration options in case of
+   troubleshooting.
+
+4. Download `podman-karabo-run-main.zip` from
+   https://git.xfel.eu/Karabo/podman-karabo
+   (via Code -> Download source code -> Zip) and unpack to where it suits
+   (right-click `Extract-All`).
+
+5. In a new PowerShell, `cd` into that directory (where the `compose.yaml`
+   file is located) and execute
+
+   ```sh
+   podman machine init
+   podman machine start
+   ```
+
+Continue with Step 2, `Karabo Workshop Environment Setup`.
+
+## 1b. Podman on Apple Silicon
+
+1. Install Podman and its compose provider using Homebrew:
+
+   ```sh
+   brew install podman
+   brew install podman-compose
+   ```
+
+2. Podman on macOS uses a Linux virtual machine. On Apple Silicon, create an
+   Apple Hypervisor-backed machine with Rosetta support (enabled by default) so it
+   can emulate x86_64 Linux binaries. Allocate memory during creation for Karabo
+   and the x86_64-emulated VS Code Server: use at least 4 GiB, preferably 8 GiB.
+   The command below allocates 8 GiB (8192 MiB) before starting the machine.
+   Use 4096 (4 GiB) if your Mac has limited RAM.:
+
+   ```sh
+   podman machine init --provider applehv --memory 8192 --now
+   podman run --rm --platform linux/amd64 alpine uname -m
+   ```
+
+   The verification command should print `x86_64`.
+
+If you already have a Podman machine that was not created with the Apple
+Hypervisor provider, create a new `applehv` machine (or recreate the existing
+one) before running the project. The `linux/amd64` platform in `compose.yaml`
+selects the x86_64 image; emulation is slower than running a native image.
+
+Continue with Step 2, `Karabo Workshop Environment Setup`.
+
+## 2. Karabo Workshop Environment Setup
+
+1. Checkout this repository and, within its root directory, follow these steps:
+
+2. Start everything with:
+
+   ```sh
+   podman compose up --build
+   ```
+
+   If you use `docker` instead of `podman`, run instead:
+
+   ```sh
+   docker-compose build
+   docker-compose up
+   ```
+
+   If startup fails with a timeout during a download, retry the command.
+
+   Keep that shell up and running. With `Ctrl-C` you could stop it, but that
+   exits also the shells you opened (see below).
 
 The `karabo` service is intentionally pinned to `linux/amd64`, including on
 Apple Silicon. Its first start persists a Karabo installation in the
@@ -46,19 +131,19 @@ available at `rabbitmq:5672` inside the container, using the `xfel` / `karabo`
 credentials; InfluxDB is at `influxdb:8086`.
 The Karabo GUI server is published on host port `44444`.
 
-## Host GUI
+## 3. Host GUI
 
-The Karabo GUI needs to be installed on the host separately from the container. For
-this workshop (and for Windows in general), we recommend downloading and installing
-a complete Karabo GUI bundle that matches your operating system from
+1. The Karabo GUI needs to be installed on the host separately from the container. For
+   this workshop (and for Windows in general), we recommend downloading and installing
+   a complete Karabo GUI bundle that matches your operating system from
 
-https://syncandshare.xfel.eu/index.php/s/tcdSdqLGKbqYoWb
+   https://syncandshare.xfel.eu/index.php/s/tcdSdqLGKbqYoWb
 
-In Linux (and possibly MacOS), you'll have to give the file writing permissions:
+2. In Linux (and possibly MacOS), you'll have to give the file writing permissions:
 
-```sh
-chmod a+x karabo-gui
-```
+   ```sh
+   chmod a+x karabo-gui
+   ```
 
 ### Other ways to install the GUI
 
@@ -78,46 +163,46 @@ conda activate karabo-gui
 pip install karabo.gui
 ```
 
-## Developing in the Container
+## 4. Developing in the Container
 
-Keep the services running, then, in another shell of your host machine,
-open an interactive shell in the Karabo container
-(after `cd` to the directory with `podman.yaml`) via: 
+1. Keep the services running, then, in another shell of your host machine,
+   open an interactive shell in the Karabo container
+   (after `cd` to the directory with `podman.yaml`) via: 
 
-```sh
-podman compose exec karabo bash
-```
+   ```sh
+   podman compose exec karabo bash
+   ```
 
-(or replace `podman compose` with `docker-compose`).
+   (or replace `podman compose` with `docker-compose`).
 
-The shell sources `/home/karabouser/framework/activate` automatically. Your work is
-inside the container unless you explicitly mount a host directory in
-`compose.yaml`.
+   The shell sources `/home/karabouser/framework/activate` automatically. Your work is
+   inside the container unless you explicitly mount a host directory in
+   `compose.yaml`.
 
-Note that terminal editors like `emacs`, `nano` and `vim` are available in
-the machine.
+   Note that terminal editors like `emacs`, `nano` and `vim` are available in
+   the machine.
 
-The Karabo environment is activated in this `bash` shell.
-You can check that and see which Karabo servers are available via
+2. The Karabo environment is activated in this `bash` shell.
+   You can check that and see which Karabo servers are available via
 
-```sh
-karabo-check
-```
+   ```sh
+   karabo-check
+   ```
 
-Note that you can run many of these shells in parallel.
+   Note that you can run many of these shells in parallel.
 
 
-### VS Code Remote Development
+### 4.1. VS Code Remote Development
 
-Install VS Code's **Dev Containers** extension, start the Compose project, and
-then run **Dev Containers: Attach to Running Container...** from the Command
-Palette. Select the `karabo` container and open `/home/karabouser/framework` as the
-workspace. VS Code installs its server in the container and its integrated
-terminal uses the activated shell described above.
+1. Install VS Code's **Dev Containers** extension, start the Compose project, and
+   then run **Dev Containers: Attach to Running Container...** from the Command
+   Palette. Select the `karabo` container and open `/home/karabouser/framework` as the
+   workspace. VS Code installs its server in the container and its integrated
+   terminal uses the activated shell described above.
 
-To use Podman with the Dev Containers extension, open VS Code **Settings**
-(`Cmd+,` on macOS), search for **Dev Containers: Docker Path**, and set it to
-`podman`. Reload VS Code, then attach to the same running `karabo` container.
+2. To use Podman with the Dev Containers extension, open VS Code **Settings**
+   (`Cmd+,` on macOS), search for **Dev Containers: Docker Path**, and set it to
+   `podman`. Reload VS Code, then attach to the same running `karabo` container.
 
 If VS Code connects but its terminal never opens, run **Dev Containers: Open
 Named Configuration File** from the Command Palette, select `karabo`, and add:
@@ -130,94 +215,6 @@ Named Configuration File** from the Command Palette, select `karabo`, and add:
 
 Reattach to the container. This bypasses VS Code's login-shell environment
 probe; terminals still source `/home/karabouser/framework/activate` via `.bashrc`.
-
-## Podman on Windows 11
-
-Extensive instruction can be found at
-
-https://github.com/podman-container-tools/podman/blob/main/docs/tutorials/podman-for-windows.md
-
-In short:
-
-Install the `Windows Terminal` via the Windows store or by running
-
-```sh
-winget install Microsoft.WindowsTerminal
-```
-
-in the Windos CMD or PowerShell prompt.
-We recommend to run the commands in the PowerShell.
-
-Download podman installer v6.1.1  from
-
-https://github.com/podman-container-tools/podman/releases
-
-e.g. `podman-installer-windows-amd64.msi`
-
-(or `...arm64.ms`), matching your machine architecture, and execute it,
-e.g. by double-click.
-
-When prompted, choose WSLv2.
-
-It is also recommended to install the `Podman Desktop` from
-
-https://podman-desktop.io/docs/installation/windows-install
-
-It gives you nice overview and configuration options in case of
-troubleshooting.
-
-Download `podman-karabo-run-main.zip` from
-https://git.xfel.eu/Karabo/podman-karabo
-(via Code -> Download source code -> Zip) and unpack to where it suits
-(right-click `Extract-All`).
-
-In a new PowerShell, `cd` into that directory (where the `compose.yaml`
-file is located) and execute
-
-```sh
-podman machine init
-podman machine start
-podman compose up --build
-```
-(If the latter command fails with timeout in some download step, simply retry.)
-
-Keep that shell up and running. With `Ctrl-C` you could stop it, but that
-exits also the shells you opened (see below).
-
-Continue now with the generic section about `Developing in the Container`.
-
-## Podman on Apple Silicon
-
-Install Podman and its compose provider using Homebrew:
-
-```sh
-brew install podman
-brew install podman-compose
-```
-
-Podman on macOS uses a Linux virtual machine. On Apple Silicon, create an
-Apple Hypervisor-backed machine with Rosetta support (enabled by default) so it
-can emulate x86_64 Linux binaries. Allocate memory during creation for Karabo
-and the x86_64-emulated VS Code Server: use at least 4 GiB, preferably 8 GiB.
-The command below allocates 8 GiB (8192 MiB) before starting the machine.
-Use 4096 (4 GiB) if your Mac has limited RAM.:
-
-```sh
-podman machine init --provider applehv --memory 8192 --now
-podman run --rm --platform linux/amd64 alpine uname -m
-```
-
-The verification command should print `x86_64`. Then use Podman's Compose
-provider to start this project:
-
-```sh
-podman compose up --build
-```
-
-If you already have a Podman machine that was not created with the Apple
-Hypervisor provider, create a new `applehv` machine (or recreate the existing
-one) before running the project. The `linux/amd64` platform in `compose.yaml`
-selects the x86_64 image; emulation is slower than running a native image.
 
 ### Resetting a Locked Karabo Service Volume
 
