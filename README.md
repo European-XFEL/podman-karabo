@@ -117,13 +117,7 @@ Continue with Step 2, `Karabo Workshop Environment Setup`.
 
 The `karabo` service is intentionally pinned to `linux/amd64`, including on
 Apple Silicon. Its first start persists a Karabo installation in the
-`karabo-installation` volume and runs:
-
-```sh
-karabo-activate --init-to /home/karabouser/framework --backbone \\
-  --broker-host amqp://xfel:karabo@rabbitmq:5672 --broker-topic karabo \\
-  --influx-db tcp://influxdb:8086
-```
+`karabo-installation` volume.
 
 On each start, its entrypoint sources `/home/karabouser/framework/activate`, runs
 `karabo-start`, and then starts its configured command. The broker is therefore
@@ -189,10 +183,34 @@ pip install karabo.gui
    karabo-check
    ```
 
+   The result should look similar to
+
+   ```shell-session
+   karabouser@a6e251499597:~$ karabo-check
+   boundserver_workshop_sim: up (pid 625) 15 seconds, normally down, running
+   cppserver_workshop_sim: up (pid 626) 15 seconds, normally down, running
+   karabo_configServer: up (pid 628) 15 seconds, normally down, running
+   karabo_daemonServer: up (pid 624) 15 seconds, normally down, running
+   karabo_dataLogger: up (pid 634) 15 seconds, normally down, running
+   karabo_dataLoggerManager: up (pid 633) 15 seconds, normally down, running
+   karabo_guiServer: up (pid 629) 15 seconds, normally down, running
+   karabo_macroServer: up (pid 636) 15 seconds, normally down, running
+   karabo_projectDBServer: up (pid 637) 15 seconds, normally down, running
+   karabo_webAggregator: up (pid 627) 15 seconds, normally down, running
+   karabo_webServer: up (pid 635) 15 seconds, normally down, running
+   mdlserver_workshop_device: up (pid 632) 15 seconds, normally down, running
+   mdlserver_workshop_gui: up (pid 631) 15 seconds, normally down, running
+   mdlserver_workshop_pipe: up (pid 638) 15 seconds, normally down, running
+   mdlserver_workshop_sim: up (pid 630) 15 seconds, normally down, running
+   ```
+
    Note that you can run many of these shells in parallel.
 
 
 ### 4.1. VS Code Remote Development
+
+If you prefer VS Code over `emacs`, `nano` and `vim` during the workshop, you could
+connect VS Code running on your host system to the Karabo container.
 
 1. Install VS Code's **Dev Containers** extension, start the Compose project, and
    then run **Dev Containers: Attach to Running Container...** from the Command
