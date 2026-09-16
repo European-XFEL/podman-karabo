@@ -4,7 +4,7 @@ set -euo pipefail
 installation=/home/karabouser/framework
 
 
-if [ ! -f "first_run" ]; then
+if [ ! -f "first_run_done" ]; then
     karabo-activate --init-to "$installation" --backbone \
         --broker-host amqp://xfel:karabo@rabbitmq:5672 --broker-topic karabo \
         --influx-db tcp://influxdb:8086
@@ -31,7 +31,7 @@ fi
 # The activation script prepares the environment for the commands below.
 source "$installation/activate"
 
-if [ ! -f "first_run" ]; then
+if [ ! -f "first_run_done" ]; then
     karabo-add-deviceserver mdlServer/workshop_gui middlelayerserver
     karabo-add-deviceserver mdlServer/workshop_pipe middlelayerserver
     karabo-add-deviceserver boundServer/workshop_sim pythonserver
@@ -40,25 +40,27 @@ if [ ! -f "first_run" ]; then
     karabo-add-deviceserver mdlServer/workshop_device middlelayerserver
 fi
 
-mkdir -p $installation/devices
-pushd $installation/devices
-
-for dev in imageSourcePy processingUtils Karabo-simulatedMotors simulatedCameraPy \
-    karaboWorkshop karaboWorkshopPipelines ; do
-  if [ ! -d "$installation/devices/$dev" ]; then
-    git clone https://github.com/European-XFEL/$dev.git
-    pushd $dev
-    if [ -f "pyproject.toml" ]; then  # for karaboWorkshop* devices we might be cloning empty repositories
-      pip install -e .
+if [ ! -f "first_run_done" ]; then
+  mkdir -p $installation/devices
+  pushd $installation/devices
+  for dev in imageSourcePy processingUtils Karabo-simulatedMotors simulatedCameraPy \
+      karaboWorkshop karaboWorkshopPipelines ; do
+    if [ ! -d "$installation/devices/$dev" ]; then
+      git clone https://github.com/European-XFEL/$dev.git
+      pushd $dev
+      if [ -f "pyproject.toml" ]; then  # for karaboWorkshop* devices we might be cloning empty repositories
+        pip install -e .
+      fi
+      popd
     fi
-    popd
-  fi
-done
+  done
+  popd  # get out from $installation/devices
+fi
 
-popd  # get out from $installation/devices
 
 # Create empty file as indicator that this script already ran once
-touch first_run
+touch first_run_done
 
 karabo-start
+
 exec "$@"
