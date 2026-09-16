@@ -5,44 +5,44 @@ installation=/home/karabouser/framework
 
 
 if [ ! -f "first_run_done" ]; then
-    karabo-activate --init-to "$installation" --backbone \
-        --broker-host amqp://xfel:karabo@rabbitmq:5672 --broker-topic karabo \
-        --influx-db tcp://influxdb:8086
+  karabo-activate --init-to "$installation" --backbone \
+      --broker-host amqp://xfel:karabo@rabbitmq:5672 --broker-topic karabo \
+      --influx-db tcp://influxdb:8086
 
-    mkdir -p $installation/var/data/project_db/
-    cp /usr/local/share/workshop_project.sqlite3 $installation/var/data/project_db/
-    echo workshop_project.sqlite3 > $installation/var/environment/KARABO_PROJECT_DB_DBNAME
+  mkdir -p $installation/var/data/project_db/
+  cp /usr/local/share/workshop_project.sqlite3 $installation/var/data/project_db/
+  echo workshop_project.sqlite3 > $installation/var/environment/KARABO_PROJECT_DB_DBNAME
 
-    data_logger_run="$installation/var/service/karabo_dataLoggerManager/run"
-    chmod +w "$data_logger_run"
-    sed -i 's/"logger": "InfluxDataLogger", //g' "$data_logger_run"
+  data_logger_run="$installation/var/service/karabo_dataLoggerManager/run"
+  chmod +w "$data_logger_run"
+  sed -i 's/"logger": "InfluxDataLogger", //g' "$data_logger_run"
 
-    # InfluxLogReader in Karabo 3.1 reads these newer variable names, whereas
-    # karabo-activate currently creates the older KARABO_INFLUX_* names above.
-    printf '%s' 'tcp://influxdb:8086' > "$installation/var/environment/KARABO_INFLUXDB_QUERY_URL"
-    printf '%s' 'karabo' > "$installation/var/environment/KARABO_INFLUXDB_DBNAME"
+  # InfluxLogReader in Karabo 3.1 reads these newer variable names, whereas
+  # karabo-activate currently creates the older KARABO_INFLUX_* names above.
+  printf '%s' 'tcp://influxdb:8086' > "$installation/var/environment/KARABO_INFLUXDB_QUERY_URL"
+  printf '%s' 'karabo' > "$installation/var/environment/KARABO_INFLUXDB_DBNAME"
 
-    # The packaged GUI service defaults to the obsolete KaraboDataLoggerManager
-    # device ID. Point it at the manager created by this standalone installation.
-    sed -i 's/"port": 44444}}/"port": 44444, "dataLogManagerId": "Karabo_DataLoggerManager_0"}}/' \
-        "$installation/var/service/karabo_guiServer/run"
+  # The packaged GUI service defaults to the obsolete KaraboDataLoggerManager
+  # device ID. Point it at the manager created by this standalone installation.
+  sed -i 's/"port": 44444}}/"port": 44444, "dataLogManagerId": "Karabo_DataLoggerManager_0"}}/' \
+      "$installation/var/service/karabo_guiServer/run"
 fi
 
 # The activation script prepares the environment for the commands below.
 source "$installation/activate"
 
 if [ ! -f "first_run_done" ]; then
-    karabo-add-deviceserver mdlServer/workshop_gui middlelayerserver
-    karabo-add-deviceserver mdlServer/workshop_pipe middlelayerserver
-    karabo-add-deviceserver boundServer/workshop_sim pythonserver
-    karabo-add-deviceserver cppServer/workshop_sim cppserver
-    karabo-add-deviceserver mdlServer/workshop_sim middlelayerserver
-    karabo-add-deviceserver mdlServer/workshop_device middlelayerserver
-fi
 
-if [ ! -f "first_run_done" ]; then
+  karabo-add-deviceserver mdlServer/workshop_gui middlelayerserver
+  karabo-add-deviceserver mdlServer/workshop_pipe middlelayerserver
+  karabo-add-deviceserver boundServer/workshop_sim pythonserver
+  karabo-add-deviceserver cppServer/workshop_sim cppserver
+  karabo-add-deviceserver mdlServer/workshop_sim middlelayerserver
+  karabo-add-deviceserver mdlServer/workshop_device middlelayerserver
+
   mkdir -p $installation/devices
   pushd $installation/devices
+
   for dev in imageSourcePy processingUtils Karabo-simulatedMotors simulatedCameraPy \
       karaboWorkshop karaboWorkshopPipelines ; do
     if [ ! -d "$installation/devices/$dev" ]; then
@@ -54,9 +54,10 @@ if [ ! -f "first_run_done" ]; then
       popd
     fi
   done
-  popd  # get out from $installation/devices
-fi
 
+  popd  # get out from $installation/devices
+
+fi
 
 # Create empty file as indicator that this script already ran once
 touch first_run_done
