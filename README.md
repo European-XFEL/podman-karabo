@@ -247,5 +247,3 @@ podman compose rm -sf karabo
 podman compose up -d karabo
 ```
 
-Do not remove `karabo-installation`; it contains the activated Karabo
-environment. The recreated container can access it without relabeling.
