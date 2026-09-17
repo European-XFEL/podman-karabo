@@ -49,9 +49,9 @@ In short:
    troubleshooting.
 
 4. Download `podman-karabo-run-main.zip` from
-   https://git.xfel.eu/Karabo/podman-karabo
-   (via Code -> Download source code -> Zip) and unpack to where it suits
-   (right-click `Extract-All`).
+   https://github.com/European-XFEL/podman-karabo 
+   (by clicking on the 'Code' button then selecting 'Download ZIP') 
+   and unpack to where it suits (right-click `Extract-All`).
 
 5. In a new PowerShell, `cd` into that directory (where the `compose.yaml`
    file is located) and execute
@@ -247,5 +247,3 @@ podman compose rm -sf karabo
 podman compose up -d karabo
 ```
 
-Do not remove `karabo-installation`; it contains the activated Karabo
-environment. The recreated container can access it without relabeling.
