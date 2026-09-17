@@ -50,7 +50,7 @@ In short:
 
 4. Download `podman-karabo-run-main.zip` from
    https://github.com/European-XFEL/podman-karabo 
-   (by clicking on the 'Code' button then selcting 'Download ZIP') 
+   (by clicking on the 'Code' button then selecting 'Download ZIP') 
    and unpack to where it suits (right-click `Extract-All`).
 
 5. In a new PowerShell, `cd` into that directory (where the `compose.yaml`
