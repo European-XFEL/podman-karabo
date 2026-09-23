@@ -25,6 +25,8 @@ USER 1001:1001
 
 ENV PATH=/home/karabouser/karabo-venv/bin:$PATH
 
+RUN printf '%s\n' 'source /usr/share/bash-completion/completions/git' >> /home/karabouser/.bashrc
+
 RUN printf '%s\n' '[ -f /home/karabouser/framework/activate ] && source /home/karabouser/framework/activate' \
     >> /home/karabouser/.bashrc
 
